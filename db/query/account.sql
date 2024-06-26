@@ -18,4 +18,4 @@ select * from accounts order by id limit $1 offset 2;
 update accounts set balance= $2 where id =$1;
 
 -- name: DeleteAccount :exec
-delete from accounts where id =$1;
+delete from accounts where id = $1;

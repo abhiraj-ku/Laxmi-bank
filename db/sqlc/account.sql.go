@@ -39,7 +39,7 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (A
 }
 
 const deleteAccount = `-- name: DeleteAccount :exec
-delete from accounts where id =$1
+delete from accounts where id = $1
 `
 
 func (q *Queries) DeleteAccount(ctx context.Context, id int64) error {
