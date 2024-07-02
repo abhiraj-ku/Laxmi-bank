@@ -11,6 +11,21 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:14-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: #Kyabawasir69
+          POSTGRES_DB: laxmi_bank
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: setup go 1.x
         uses: actions/setup-go@v2
@@ -20,3 +35,9 @@ jobs:
 
       - name: checkout code repo
         uses: actions/checkout@v2
+
+      - name: Install golang-migrate
+        run: |
+          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.14.1/migrate.linux-amd64.tar.gz | tar xvz
+          sudo mv migrate.linux-amd64 /usr/bin/migrate
+          which migrate
