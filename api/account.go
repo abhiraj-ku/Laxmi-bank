@@ -20,7 +20,6 @@ func (server *Server) createAccount(ctx *gin.Context) {
 		return
 	}
 
-	// 
-	
+	// Create the account after validating the input
 
 }
