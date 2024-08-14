@@ -1,6 +1,7 @@
 package api
 
 import (
+	db "example/laxmi_chit_fund/db/sqlc"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,5 +22,19 @@ func (server *Server) createAccount(ctx *gin.Context) {
 	}
 
 	// Create the account after validating the input
+
+	arg := db.CreateAccountParams{
+		Owner:    req.Owner,
+		Currency: req.Currency,
+		Balance:  0,
+	}
+
+	account, err := server.store.CreateAccount(ctx, arg)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, account)
 
 }

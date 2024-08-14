@@ -2,20 +2,23 @@ package api
 
 import (
 	db "example/laxmi_chit_fund/db/sqlc"
-	"example/laxmi_chit_fund/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Server struct {
-	config utils.Config
 	store  db.Store
 	router *gin.Engine
 }
 
-// func NewServer(store *db.Store) *Server{
+func NewServer(store *db.Store) *Server {
+	server := &Server{store: store}
+	router := gin.Default(),
 
-// }
+		router.POST("/accounts", server.createAccount)
+	server.router = router
+	return server
+}
 
 // Setup Gin Router to handle all the incoming API routes
 
