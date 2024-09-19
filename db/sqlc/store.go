@@ -60,6 +60,8 @@ func (store *Store) TransferTX(ctx context.Context, arg TransferTXParams) (Trans
 
 	err := store.execTX(ctx, func(q *Queries) error {
 		var err error
+
+		// create transfer record
 		result.Transfer, err = q.CreateTransfer(ctx, CreateTransferParams{
 			FromAccountID: arg.FromAccountID,
 			ToAccountID:   arg.ToAccountID,
@@ -68,6 +70,8 @@ func (store *Store) TransferTX(ctx context.Context, arg TransferTXParams) (Trans
 		if err != nil {
 			return err
 		}
+
+		// substract money from 'Fromaccount/senders account'
 		result.FromEntry, err = q.CreateEntry(ctx, CreateEntryParams{
 			AccountID: arg.FromAccountID,
 			Amount:    -arg.Amount,
@@ -75,6 +79,8 @@ func (store *Store) TransferTX(ctx context.Context, arg TransferTXParams) (Trans
 		if err != nil {
 			return err
 		}
+
+		// Add money to 'ToAccount/reciever's account'
 		result.ToEntry, err = q.CreateEntry(ctx, CreateEntryParams{
 			AccountID: arg.ToAccountID,
 			Amount:    arg.Amount,
@@ -82,7 +88,36 @@ func (store *Store) TransferTX(ctx context.Context, arg TransferTXParams) (Trans
 		if err != nil {
 			return err
 		}
+
 		// TODO: create update account and implement locking mechanism to handle deadlock
+
+		// transfer/move money from account 1
+		account1, err := q.GetAccount(ctx, arg.FromAccountID)
+		if err != nil {
+			return nil
+		}
+
+		result.FromAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
+			ID:      arg.FromAccountID,
+			Balance: account1.Balance - arg.Amount,
+		})
+		if err != nil {
+			return err
+		}
+
+		// add money to account 2
+		account2, err := q.GetAccount(ctx, arg.FromAccountID)
+		if err != nil {
+			return nil
+		}
+
+		result.ToAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
+			ID:      arg.ToAccountID,
+			Balance: account2.Balance + arg.Amount,
+		})
+		if err != nil {
+			return err
+		}
 
 		return nil
 	})
