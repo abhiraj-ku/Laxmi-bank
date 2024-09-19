@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// servess
 type Server struct {
 	store  db.Store
 	router *gin.Engine
